@@ -1,8 +1,11 @@
 package com.arkochatterjee.chatroom;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -20,11 +23,21 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -52,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
     private Button mSendButton;
-
+    private GoogleApiClient mGoogleApiClient;
     private String mUsername;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
@@ -60,6 +73,42 @@ public class MainActivity extends AppCompatActivity
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotoStorageReference;
     private static final int RC_PHOTO_PICKER =  2;
+    private Uri profilePic;
+
+    private void updateUI()
+    {
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
+    }
+
+    private void Out()
+    {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this , new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                    }
+                } /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        FirebaseAuth.getInstance().signOut();
+
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        updateUI();
+                    }
+                });
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +136,12 @@ public class MainActivity extends AppCompatActivity
         FirebaseUser user = mAuth.getCurrentUser();
         name.setText(user.getDisplayName().toString());
         mUsername = user.getDisplayName().toString();
+        profilePic=user.getPhotoUrl();
+        ImageView pp=(ImageView)header.findViewById(R.id.imageView);
+        Glide.with(pp.getContext())
+                .load(profilePic)
+                .into(pp);
+
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage=FirebaseStorage.getInstance();
@@ -206,6 +261,7 @@ public class MainActivity extends AppCompatActivity
             });
 
         }
+
     }
 
 
@@ -258,9 +314,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(this, SignInActivity.class);
-            startActivity(intent);
+            //mAuth = FirebaseAuth.getInstance();
+
+            Out();
+
 
         }
 

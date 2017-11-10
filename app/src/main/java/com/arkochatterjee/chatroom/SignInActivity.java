@@ -47,9 +47,9 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
         signInButton = (com.google.android.gms.common.SignInButton)findViewById(R.id.sign_in_button);
-        signOutButton = (Button)findViewById(R.id.sign_out_button);
-        nameTextView = (TextView)findViewById(R.id.name_text_view);
-        emailTextView = (TextView)findViewById(R.id.email_text_view);
+      //  signOutButton = (Button)findViewById(R.id.sign_out_button);
+        //nameTextView = (TextView)findViewById(R.id.name_text_view);
+        //emailTextView = (TextView)findViewById(R.id.email_text_view);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -67,18 +67,19 @@ public class SignInActivity extends AppCompatActivity {
                 .build();
 
         mAuth = FirebaseAuth.getInstance();
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                signInButton.setVisibility(View.GONE);
-                signOutButton.setVisibility(View.VISIBLE);
+               // signInButton.setVisibility(View.GONE);
+              //  signOutButton.setVisibility(View.VISIBLE);
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     if(user.getDisplayName() != null)
-                        nameTextView.setText("Hi " + user.getDisplayName().toString());
-                    emailTextView.setText(user.getEmail().toString());
+                       // nameTextView.setText("Hi " + user.getDisplayName().toString());
+                    //emailTextView.setText(user.getEmail().toString());
                     startActivity(new Intent(SignInActivity.this, MainActivity.class));
 
                 } else {
@@ -95,7 +96,7 @@ public class SignInActivity extends AppCompatActivity {
                 signIn();
             }
         });
-        signOutButton.setOnClickListener(new View.OnClickListener() {
+     /*   signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
@@ -111,7 +112,7 @@ public class SignInActivity extends AppCompatActivity {
                         });
             }
             // ..
-        });
+        }); */
 
     }
 
