@@ -314,9 +314,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-            //mAuth = FirebaseAuth.getInstance();
-
-            Out();
+           // FirebaseUser user = FirebaseAuth.getCurrentUser();
+            Intent intent3 = new Intent(this,SignInActivity.class);
+            intent3.putExtra("signOut","1");
+            //signOut();
+           // Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            startActivity(intent3);
+           // finish();
+            //Out();
 
 
         }

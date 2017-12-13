@@ -42,6 +42,7 @@ public class SignInActivity extends AppCompatActivity {
     private Button signOutButton;
     private TextView nameTextView;
     private TextView emailTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,25 @@ public class SignInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+            Intent intent = getIntent();
+
+            String fName = intent.getStringExtra("data");
+
+            int a=Integer.parseInt(fName);
+
+
+            int b=a;
+
+            {
+                // Firebase sign out
+                mAuth.signOut();
+
+                // Google sign out
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            }
+
+
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -121,6 +141,7 @@ public class SignInActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -139,6 +160,8 @@ public class SignInActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
     @Override
     public void onStart() {
